@@ -746,12 +746,6 @@
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-title">REDEEMMS</div>
-      <div class="nav-item" onclick="showPage('redeemms')" data-page="redeemms">
-        <div class="nav-icon">🎫</div> Redeem Keys
-      </div>
-    </div>
-    <div class="nav-group">
       <div class="nav-group-title">Office 365</div>
       <div class="nav-item" onclick="showPage('o365')" data-page="o365">
         <div class="nav-icon">📧</div> Account Checker
@@ -873,34 +867,6 @@
             <button class="copy-btn" onclick="copyResult('pidmsDesc_resultBox')">Copy</button>
           </div>
           <div class="result-box" id="pidmsDesc_resultBox"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== REDEEMMS ===== -->
-    <div class="page" id="page-redeemms">
-      <div class="page-header">
-        <h2>Redeem Keys</h2>
-        <p>Attempt to redeem product keys via the REDEEMMS API.</p>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-get">GET</span> Key Redemption</div>
-        <div class="card-desc">Enter keys to redeem. The API will process redemption and return results.</div>
-        <div class="form-group">
-          <label>Product Keys <span class="required">*</span></label>
-          <textarea class="large" id="redeem_keys" placeholder="Enter keys to redeem, one per line:&#10;QBFC4J2NWCPKY824GC4BQJ4QG&#10;MRJJYN9PTVQ2VCXCVB7P2DM3G"></textarea>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" id="redeem_btn" onclick="redeemKeys()">
-            <span id="redeem_btnText">Redeem Keys</span>
-          </button>
-        </div>
-        <div class="result-area" id="redeem_result">
-          <div class="result-header">
-            <div class="result-label" id="redeem_resultLabel">Response</div>
-            <button class="copy-btn" onclick="copyResult('redeem_resultBox')">Copy</button>
-          </div>
-          <div class="result-box" id="redeem_resultBox"></div>
         </div>
       </div>
     </div>
@@ -1138,26 +1104,6 @@ async function getDescription() {
   }
 
   setLoading('pidmsDesc_btn', 'pidmsDesc_btnText', false);
-}
-
-// 7. REDEEMMS
-async function redeemKeys() {
-  const keys = document.getElementById('redeem_keys').value.trim();
-  if (!keys) { showToast('Please enter product keys'); return; }
-
-  setLoading('redeem_btn', 'redeem_btnText', true);
-
-  try {
-    const url = `${apiBase()}/redeemms_api?keys=${encodeURIComponent(keys)}&apikey=${encodeURIComponent(API_KEY)}`;
-    const res = await fetch(url);
-    const data = await parseResponse(res);
-
-    showResult('redeem', data, true);
-  } catch (err) {
-    showResult('redeem', 'Request failed: ' + err.message, false);
-  }
-
-  setLoading('redeem_btn', 'redeem_btnText', false);
 }
 
 // 8. Office 365
