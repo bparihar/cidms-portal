@@ -570,35 +570,6 @@
     color: var(--text-muted);
   }
 
-  /* Card header */
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .card-header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    background: var(--info-bg);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .card-header-icon svg {
-    width: 18px;
-    height: 18px;
-    display: block;
-  }
-
-  .card-header .card-title { margin-bottom: 2px; }
-  .card-header .card-desc { margin-bottom: 0; }
-
   /* Home grid */
   .home-grid {
     display: grid;
@@ -756,31 +727,30 @@
     <div class="page active" id="page-home">
       <div class="page-header">
         <h2>Welcome to Microsoft 365 Partner Admin Center</h2>
-        <p>Manage product activation and licensing for your organization from one place.</p>
       </div>
       <div class="home-grid">
         <div class="home-card" onclick="showPage('get-cid')">
           <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div>
           <div class="home-card-title">Confirmation ID</div>
-          <div class="home-card-desc">Generate a Confirmation ID (CID) from an Installation ID (IID) for Windows activation.</div>
+          <div class="home-card-desc">Generate a Confirmation ID (CID) from an Installation ID (IID).</div>
           <div class="home-card-link">Open <span>→</span></div>
         </div>
         <div class="home-card" onclick="showPage('check-iid')">
           <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
           <div class="home-card-title">Installation ID Status</div>
-          <div class="home-card-desc">Check whether an Installation ID has already been used or is still available.</div>
+          <div class="home-card-desc">Check whether an Installation ID has already been used.</div>
           <div class="home-card-link">Open <span>→</span></div>
         </div>
         <div class="home-card" onclick="showPage('pidms')">
           <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
           <div class="home-card-title">Key Validation</div>
-          <div class="home-card-desc">Validate product keys and view their activation status and edition details.</div>
+          <div class="home-card-desc">Validate product keys and view their status and edition.</div>
           <div class="home-card-link">Open <span>→</span></div>
         </div>
         <div class="home-card" onclick="showPage('pidms-desc')">
           <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
           <div class="home-card-title">Key Details</div>
-          <div class="home-card-desc">Retrieve product and edition information for a product key.</div>
+          <div class="home-card-desc">Retrieve product and edition information for a key.</div>
           <div class="home-card-link">Open <span>→</span></div>
         </div>
       </div>
@@ -791,16 +761,8 @@
       <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Activation<span>/</span>Confirmation ID</div>
       <div class="page-header">
         <h2>Confirmation ID</h2>
-        <p>Generate a Confirmation ID (CID) for a Windows installation. Enter the Installation ID (IID) shown in the activation dialog to retrieve the matching Confirmation ID.</p>
       </div>
       <div class="card">
-        <div class="card-header">
-          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div>
-          <div>
-            <div class="card-title">Generate Confirmation ID</div>
-            <div class="card-desc">The Installation ID is a long numeric string. Dashes are removed automatically.</div>
-          </div>
-        </div>
         <div class="form-group">
           <label>Installation ID (IID) <span class="required">*</span></label>
           <textarea id="getCID_iid" placeholder="Paste the Installation ID here" rows="3"></textarea>
@@ -827,16 +789,8 @@
       <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Activation<span>/</span>Installation ID Status</div>
       <div class="page-header">
         <h2>Installation ID Status</h2>
-        <p>Check whether an Installation ID has already been used for activation or is still available.</p>
       </div>
       <div class="card">
-        <div class="card-header">
-          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
-          <div>
-            <div class="card-title">Check Status</div>
-            <div class="card-desc">Queries the activation service without generating a new Confirmation ID.</div>
-          </div>
-        </div>
         <div class="form-group">
           <label>Installation ID (IID) <span class="required">*</span></label>
           <textarea id="checkIID_iid" placeholder="Paste the Installation ID here" rows="3"></textarea>
@@ -861,20 +815,11 @@
       <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Licensing<span>/</span>Key Validation</div>
       <div class="page-header">
         <h2>Key Validation</h2>
-        <p>Validate product keys and view their activation status, edition, and licensing details.</p>
       </div>
       <div class="card">
-        <div class="card-header">
-          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
-          <div>
-            <div class="card-title">Validate Product Keys</div>
-            <div class="card-desc">Enter one or more product keys, one per line, to check their status.</div>
-          </div>
-        </div>
         <div class="form-group">
           <label>Product Keys <span class="required">*</span></label>
           <textarea class="large" id="pidms_keys" placeholder="Enter product keys, one per line"></textarea>
-          <div class="input-hint">Separate multiple keys with a new line.</div>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="pidms_btn" onclick="checkPIDMS()">
@@ -896,16 +841,8 @@
       <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Licensing<span>/</span>Key Details</div>
       <div class="page-header">
         <h2>Key Details</h2>
-        <p>Retrieve product and edition information for a product key without a full validation.</p>
       </div>
       <div class="card">
-        <div class="card-header">
-          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
-          <div>
-            <div class="card-title">Product Information</div>
-            <div class="card-desc">Returns the product name and edition associated with each key.</div>
-          </div>
-        </div>
         <div class="form-group">
           <label>Product Keys <span class="required">*</span></label>
           <textarea class="large" id="pidmsDesc_keys" placeholder="Enter product keys, one per line"></textarea>
