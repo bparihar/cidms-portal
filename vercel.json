@@ -1,4 +1,7 @@
 {
   "version": 2,
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/ajax/:path*", "destination": "/api/ajax/:path*" }
+  ]
 }
