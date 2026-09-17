@@ -240,28 +240,6 @@
     margin-bottom: 22px;
   }
 
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-
-  .badge-get {
-    background: var(--info-bg);
-    color: #004578;
-    border: 1px solid rgba(0, 120, 212, 0.2);
-  }
-
-  .badge-post {
-    background: var(--success-bg);
-    color: var(--success);
-    border: 1px solid rgba(16, 124, 16, 0.2);
-  }
-
   /* Forms */
   .form-group {
     margin-bottom: 18px;
@@ -572,10 +550,158 @@
   }
 
   /* Responsive */
+  /* Breadcrumb */
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+  }
+
+  .breadcrumb a {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .breadcrumb span {
+    margin: 0 8px;
+    color: var(--text-muted);
+  }
+
+  /* Card header */
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card-header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: var(--info-bg);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .card-header-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .card-header .card-title { margin-bottom: 2px; }
+  .card-header .card-desc { margin-bottom: 0; }
+
+  /* Home grid */
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .home-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .home-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+  }
+
+  .home-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--info-bg);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .home-card-icon svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+  }
+
+  .home-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .home-card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .home-card-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Header search */
+  .header-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f6f8;
+    border: 1px solid #8a8886;
+    border-radius: 2px;
+    padding: 6px 12px;
+    width: 260px;
+    color: var(--text-muted);
+  }
+
+  .header-search svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .header-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    width: 100%;
+  }
+
+  .header-search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
   @media (max-width: 768px) {
     .sidebar { display: none; }
     .main { padding: 20px; }
     .header { padding: 14px 16px; }
+    .header-search { display: none; }
     .input-row { flex-direction: column; }
   }
 </style>
@@ -585,8 +711,12 @@
 <!-- Header -->
 <div class="header">
   <div class="header-left">
-    <div class="logo"><img src="logo.png" alt="CIDMS Portal"></div>
+    <div class="logo"><img src="logo.png" alt="Microsoft 365"></div>
     <h1>Microsoft 365 Partner Admin Center</h1>
+  </div>
+  <div class="header-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input type="text" id="navSearch" placeholder="Search" oninput="filterNav(this.value)">
   </div>
 </div>
 
@@ -595,21 +725,26 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="nav-group">
-      <div class="nav-group-title">CIDMS</div>
-      <div class="nav-item active" onclick="showPage('get-cid')" data-page="get-cid">
-        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div> Get CID via IID
-      </div>
-      <div class="nav-item" onclick="showPage('check-iid')" data-page="check-iid">
-        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div> Check IID Status
+      <div class="nav-item active" onclick="showPage('home')" data-page="home">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div> Home
       </div>
     </div>
     <div class="nav-group">
-      <div class="nav-group-title">PIDMS</div>
+      <div class="nav-group-title">Activation</div>
+      <div class="nav-item" onclick="showPage('get-cid')" data-page="get-cid">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div> Confirmation ID
+      </div>
+      <div class="nav-item" onclick="showPage('check-iid')" data-page="check-iid">
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div> Installation ID Status
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Licensing</div>
       <div class="nav-item" onclick="showPage('pidms')" data-page="pidms">
-        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div> Key Checker
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div> Key Validation
       </div>
       <div class="nav-item" onclick="showPage('pidms-desc')" data-page="pidms-desc">
-        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div> Get Description
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div> Key Details
       </div>
     </div>
   </div>
@@ -617,28 +752,68 @@
   <!-- Main Content -->
   <div class="main">
 
-    <!-- ===== GET CID VIA IID ===== -->
-    <div class="page active" id="page-get-cid">
+    <!-- ===== HOME ===== -->
+    <div class="page active" id="page-home">
       <div class="page-header">
-        <h2>Get Confirmation ID via IID</h2>
-        <p>Submit an Installation ID (IID) to retrieve the corresponding Confirmation ID (CID).</p>
+        <h2>Welcome to Microsoft 365 Partner Admin Center</h2>
+        <p>Manage product activation and licensing for your organization from one place.</p>
+      </div>
+      <div class="home-grid">
+        <div class="home-card" onclick="showPage('get-cid')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div>
+          <div class="home-card-title">Confirmation ID</div>
+          <div class="home-card-desc">Generate a Confirmation ID (CID) from an Installation ID (IID) for Windows activation.</div>
+          <div class="home-card-link">Open <span>→</span></div>
+        </div>
+        <div class="home-card" onclick="showPage('check-iid')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <div class="home-card-title">Installation ID Status</div>
+          <div class="home-card-desc">Check whether an Installation ID has already been used or is still available.</div>
+          <div class="home-card-link">Open <span>→</span></div>
+        </div>
+        <div class="home-card" onclick="showPage('pidms')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
+          <div class="home-card-title">Key Validation</div>
+          <div class="home-card-desc">Validate product keys and view their activation status and edition details.</div>
+          <div class="home-card-link">Open <span>→</span></div>
+        </div>
+        <div class="home-card" onclick="showPage('pidms-desc')">
+          <div class="home-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
+          <div class="home-card-title">Key Details</div>
+          <div class="home-card-desc">Retrieve product and edition information for a product key.</div>
+          <div class="home-card-link">Open <span>→</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== GET CID VIA IID ===== -->
+    <div class="page" id="page-get-cid">
+      <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Activation<span>/</span>Confirmation ID</div>
+      <div class="page-header">
+        <h2>Confirmation ID</h2>
+        <p>Generate a Confirmation ID (CID) for a Windows installation. Enter the Installation ID (IID) shown in the activation dialog to retrieve the matching Confirmation ID.</p>
       </div>
       <div class="card">
-        <div class="card-title"><span class="badge badge-get">GET</span> CIDMS API</div>
-        <div class="card-desc">The IID should be a long numeric string. Enter it below without dashes.</div>
+        <div class="card-header">
+          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div>
+          <div>
+            <div class="card-title">Generate Confirmation ID</div>
+            <div class="card-desc">The Installation ID is a long numeric string. Dashes are removed automatically.</div>
+          </div>
+        </div>
         <div class="form-group">
           <label>Installation ID (IID) <span class="required">*</span></label>
-          <textarea id="getCID_iid" placeholder="Enter IID (numeric string, e.g. 304879672149543591364556996487547823408023240893620542207636326)" rows="3"></textarea>
-          <div class="input-hint">Paste the full IID. Dashes will be automatically removed.</div>
+          <textarea id="getCID_iid" placeholder="Paste the Installation ID here" rows="3"></textarea>
+          <div class="input-hint">Example: 304879672149543591364556996487547823408023240893620542207636326</div>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="getCID_btn" onclick="getCIDByIID()">
-            <span id="getCID_btnText">Get Confirmation ID</span>
+            <span id="getCID_btnText">Generate Confirmation ID</span>
           </button>
         </div>
         <div class="result-area" id="getCID_result">
           <div class="result-header">
-            <div class="result-label" id="getCID_resultLabel">Response</div>
+            <div class="result-label" id="getCID_resultLabel">Result</div>
             <button class="copy-btn" onclick="copyResult('getCID_resultBox')">Copy</button>
           </div>
           <div class="cid-highlight" id="getCID_cidValue"></div>
@@ -649,16 +824,22 @@
 
     <!-- ===== CHECK IID STATUS ===== -->
     <div class="page" id="page-check-iid">
+      <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Activation<span>/</span>Installation ID Status</div>
       <div class="page-header">
-        <h2>Check IID Status</h2>
-        <p>Verify whether an Installation ID has already been used or is available.</p>
+        <h2>Installation ID Status</h2>
+        <p>Check whether an Installation ID has already been used for activation or is still available.</p>
       </div>
       <div class="card">
-        <div class="card-title"><span class="badge badge-get">GET</span> Status Check</div>
-        <div class="card-desc">Uses the justforcheck=1 flag to query status without retrieving a CID.</div>
+        <div class="card-header">
+          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <div>
+            <div class="card-title">Check Status</div>
+            <div class="card-desc">Queries the activation service without generating a new Confirmation ID.</div>
+          </div>
+        </div>
         <div class="form-group">
           <label>Installation ID (IID) <span class="required">*</span></label>
-          <textarea id="checkIID_iid" placeholder="Enter IID to check status" rows="3"></textarea>
+          <textarea id="checkIID_iid" placeholder="Paste the Installation ID here" rows="3"></textarea>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="checkIID_btn" onclick="checkIIDStatus()">
@@ -667,7 +848,7 @@
         </div>
         <div class="result-area" id="checkIID_result">
           <div class="result-header">
-            <div class="result-label" id="checkIID_resultLabel">Response</div>
+            <div class="result-label" id="checkIID_resultLabel">Result</div>
             <button class="copy-btn" onclick="copyResult('checkIID_resultBox')">Copy</button>
           </div>
           <div class="result-box" id="checkIID_resultBox"></div>
@@ -675,28 +856,34 @@
       </div>
     </div>
 
-    <!-- ===== PIDMS KEY CHECKER ===== -->
+    <!-- ===== PIDMS KEY VALIDATION ===== -->
     <div class="page" id="page-pidms">
+      <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Licensing<span>/</span>Key Validation</div>
       <div class="page-header">
-        <h2>PIDMS Key Checker</h2>
-        <p>Check the status and details of product keys (PID keys).</p>
+        <h2>Key Validation</h2>
+        <p>Validate product keys and view their activation status, edition, and licensing details.</p>
       </div>
       <div class="card">
-        <div class="card-title"><span class="badge badge-get">GET</span> Key Checker</div>
-        <div class="card-desc">Enter one or more product keys, one per line. The API checks each key and returns its status.</div>
+        <div class="card-header">
+          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
+          <div>
+            <div class="card-title">Validate Product Keys</div>
+            <div class="card-desc">Enter one or more product keys, one per line, to check their status.</div>
+          </div>
+        </div>
         <div class="form-group">
           <label>Product Keys <span class="required">*</span></label>
-          <textarea class="large" id="pidms_keys" placeholder="Enter product keys, one per line:&#10;BBPX2J9NX9J8R27VYC9JDGQ2T&#10;F8RMT6FNYCBMKQGX9M34BY7PT"></textarea>
-          <div class="input-hint">Keys are separated by newlines. Maximum 50 keys per request recommended.</div>
+          <textarea class="large" id="pidms_keys" placeholder="Enter product keys, one per line"></textarea>
+          <div class="input-hint">Separate multiple keys with a new line.</div>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="pidms_btn" onclick="checkPIDMS()">
-            <span id="pidms_btnText">Check Keys</span>
+            <span id="pidms_btnText">Validate Keys</span>
           </button>
         </div>
         <div class="result-area" id="pidms_result">
           <div class="result-header">
-            <div class="result-label" id="pidms_resultLabel">Response</div>
+            <div class="result-label" id="pidms_resultLabel">Result</div>
             <button class="copy-btn" onclick="copyResult('pidms_resultBox')">Copy</button>
           </div>
           <div class="result-box" id="pidms_resultBox"></div>
@@ -704,27 +891,33 @@
       </div>
     </div>
 
-    <!-- ===== PIDMS DESCRIPTION ===== -->
+    <!-- ===== PIDMS KEY DETAILS ===== -->
     <div class="page" id="page-pidms-desc">
+      <div class="breadcrumb"><a onclick="showPage('home')">Home</a><span>/</span>Licensing<span>/</span>Key Details</div>
       <div class="page-header">
-        <h2>Get Key Description</h2>
-        <p>Retrieve the product description for keys without full status checking.</p>
+        <h2>Key Details</h2>
+        <p>Retrieve product and edition information for a product key without a full validation.</p>
       </div>
       <div class="card">
-        <div class="card-title"><span class="badge badge-get">GET</span> Description Lookup</div>
-        <div class="card-desc">Faster than full check. Returns product name and edition info.</div>
+        <div class="card-header">
+          <div class="card-header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div>
+          <div>
+            <div class="card-title">Product Information</div>
+            <div class="card-desc">Returns the product name and edition associated with each key.</div>
+          </div>
+        </div>
         <div class="form-group">
           <label>Product Keys <span class="required">*</span></label>
           <textarea class="large" id="pidmsDesc_keys" placeholder="Enter product keys, one per line"></textarea>
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" id="pidmsDesc_btn" onclick="getDescription()">
-            <span id="pidmsDesc_btnText">Get Description</span>
+            <span id="pidmsDesc_btnText">Get Details</span>
           </button>
         </div>
         <div class="result-area" id="pidmsDesc_result">
           <div class="result-header">
-            <div class="result-label" id="pidmsDesc_resultLabel">Response</div>
+            <div class="result-label" id="pidmsDesc_resultLabel">Result</div>
             <button class="copy-btn" onclick="copyResult('pidmsDesc_resultBox')">Copy</button>
           </div>
           <div class="result-box" id="pidmsDesc_resultBox"></div>
@@ -755,6 +948,19 @@ function showPage(pageId) {
 
   document.getElementById('page-' + pageId).classList.add('active');
   document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+}
+
+// Filter sidebar navigation items by search query
+function filterNav(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-group').forEach(group => {
+    const visible = [...group.querySelectorAll('.nav-item')].some(i => i.style.display !== 'none');
+    group.style.display = visible ? '' : 'none';
+  });
 }
 
 // ============ TOAST ============
@@ -836,7 +1042,7 @@ function showResult(prefix, data, isSuccess) {
   } else {
     box.className = 'result-box';
     label.className = 'result-label';
-    label.textContent = 'Response';
+    label.textContent = 'Result';
   }
 }
 
