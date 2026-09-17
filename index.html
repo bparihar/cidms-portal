@@ -806,12 +806,6 @@
     <div class="logo">P</div>
     <h1>CIDMS Portal <span>v1.0</span></h1>
   </div>
-  <div class="header-actions">
-    <div class="api-key-badge not-configured" id="apiKeyBadge" onclick="openSettings()">
-      <div class="dot"></div>
-      <span id="apiKeyStatus">API Key Not Set</span>
-    </div>
-  </div>
 </div>
 
 <!-- Layout -->
@@ -852,12 +846,6 @@
       <div class="nav-group-title">Office 365</div>
       <div class="nav-item" onclick="showPage('o365')" data-page="o365">
         <div class="nav-icon">📧</div> Account Checker
-      </div>
-    </div>
-    <div class="nav-group">
-      <div class="nav-group-title">Settings</div>
-      <div class="nav-item" onclick="openSettings()" data-page="settings">
-        <div class="nav-icon">⚙️</div> API Configuration
       </div>
     </div>
   </div>
@@ -1111,27 +1099,6 @@
   </div>
 </div>
 
-<!-- Settings Modal -->
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal">
-    <h3>⚙️ API Configuration</h3>
-    <p>Enter your pidkey.com API key. It will be saved in your browser's local storage.</p>
-    <div class="form-group">
-      <label>API Key <span class="required">*</span></label>
-      <input type="password" id="settings_apiKey" placeholder="Enter your API key">
-    </div>
-    <div class="form-group">
-      <label>API Base URL</label>
-      <input type="text" id="settings_baseUrl" value="https://pidkey.com/ajax" placeholder="https://pidkey.com/ajax">
-      <div class="input-hint">Leave empty to use the built-in local proxy (recommended). Alternative: https://khoatoantin.com/ajax</div>
-    </div>
-    <div class="btn-group">
-      <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveSettings()">Save Configuration</button>
-    </div>
-  </div>
-</div>
-
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -1145,7 +1112,6 @@ let imageBase64Data = { imgCID: null, imgIID: null };
 if (!localStorage.getItem('cidms_apikey')) {
   localStorage.setItem('cidms_apikey', API_KEY);
 }
-updateApiKeyBadge();
 
 // ============ NAVIGATION ============
 function showPage(pageId) {
@@ -1154,48 +1120,6 @@ function showPage(pageId) {
 
   document.getElementById('page-' + pageId).classList.add('active');
   document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
-}
-
-// ============ SETTINGS ============
-function openSettings() {
-  document.getElementById('settings_apiKey').value = API_KEY;
-  document.getElementById('settings_baseUrl').value = BASE_URL;
-  document.getElementById('settingsModal').classList.add('visible');
-}
-
-function closeSettings() {
-  document.getElementById('settingsModal').classList.remove('visible');
-}
-
-function saveSettings() {
-  API_KEY = document.getElementById('settings_apiKey').value.trim();
-  BASE_URL = document.getElementById('settings_baseUrl').value.trim();
-  localStorage.setItem('cidms_apikey', API_KEY);
-  localStorage.setItem('cidms_baseurl', BASE_URL);
-  updateApiKeyBadge();
-  closeSettings();
-  showToast('Configuration saved successfully');
-}
-
-function updateApiKeyBadge() {
-  const badge = document.getElementById('apiKeyBadge');
-  const status = document.getElementById('apiKeyStatus');
-  if (API_KEY) {
-    badge.className = 'api-key-badge configured';
-    status.textContent = 'API Key Set (' + API_KEY.substring(0, 6) + '...)';
-  } else {
-    badge.className = 'api-key-badge not-configured';
-    status.textContent = 'API Key Not Set';
-  }
-}
-
-function requireApiKey() {
-  if (!API_KEY) {
-    openSettings();
-    showToast('Please configure your API key first');
-    return false;
-  }
-  return true;
 }
 
 // ============ TOAST ============
@@ -1348,7 +1272,6 @@ function removeImage(prefix) {
 
 // 1. Get CID by IID
 async function getCIDByIID() {
-  if (!requireApiKey()) return;
   const iid = cleanIID(document.getElementById('getCID_iid').value);
   if (!iid) { showToast('Please enter an IID'); return; }
 
@@ -1371,7 +1294,6 @@ async function getCIDByIID() {
 
 // 2. Check IID Status
 async function checkIIDStatus() {
-  if (!requireApiKey()) return;
   const iid = cleanIID(document.getElementById('checkIID_iid').value);
   if (!iid) { showToast('Please enter an IID'); return; }
 
@@ -1392,7 +1314,6 @@ async function checkIIDStatus() {
 
 // 3. Image → IID + CID (POST)
 async function imageToCID() {
-  if (!requireApiKey()) return;
   if (!imageBase64Data.imgCID) { showToast('Please upload an image'); return; }
 
   setLoading('imgCID_btn', 'imgCID_btnText', true);
@@ -1423,7 +1344,6 @@ async function imageToCID() {
 
 // 4. Image → IID Only (POST)
 async function imageToIID() {
-  if (!requireApiKey()) return;
   if (!imageBase64Data.imgIID) { showToast('Please upload an image'); return; }
 
   setLoading('imgIID_btn', 'imgIID_btnText', true);
@@ -1452,7 +1372,6 @@ async function imageToIID() {
 
 // 5. PIDMS Key Check
 async function checkPIDMS() {
-  if (!requireApiKey()) return;
   const keys = document.getElementById('pidms_keys').value.trim();
   if (!keys) { showToast('Please enter product keys'); return; }
 
@@ -1473,7 +1392,6 @@ async function checkPIDMS() {
 
 // 6. PIDMS Description
 async function getDescription() {
-  if (!requireApiKey()) return;
   const keys = document.getElementById('pidmsDesc_keys').value.trim();
   if (!keys) { showToast('Please enter product keys'); return; }
 
@@ -1494,7 +1412,6 @@ async function getDescription() {
 
 // 7. REDEEMMS
 async function redeemKeys() {
-  if (!requireApiKey()) return;
   const keys = document.getElementById('redeem_keys').value.trim();
   if (!keys) { showToast('Please enter product keys'); return; }
 
@@ -1515,7 +1432,6 @@ async function redeemKeys() {
 
 // 8. Office 365
 async function checkO365() {
-  if (!requireApiKey()) return;
   const accounts = document.getElementById('o365_accounts').value.trim();
   if (!accounts) { showToast('Please enter accounts'); return; }
 
@@ -1533,16 +1449,6 @@ async function checkO365() {
 
   setLoading('o365_btn', 'o365_btnText', false);
 }
-
-// Close modal on backdrop click
-document.getElementById('settingsModal').addEventListener('click', function(e) {
-  if (e.target === this) closeSettings();
-});
-
-// Keyboard shortcut: Escape closes modal
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeSettings();
-});
 </script>
 </body>
 </html>
