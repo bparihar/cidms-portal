@@ -1,0 +1,4 @@
+# Files excluded from Vercel deployment
+server.js
+.gitignore
+README.md

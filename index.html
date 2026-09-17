@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIDMS Portal</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #212430;
+    --bg-input: #2a2e3b;
+    --border: #333850;
+    --border-focus: #6c5ce7;
+    --text-primary: #e8eaf0;
+    --text-secondary: #9ca3b8;
+    --text-muted: #6b7280;
+    --accent: #6c5ce7;
+    --accent-hover: #7c6ef7;
+    --accent-glow: rgba(108, 92, 231, 0.25);
+    --success: #00c853;
+    --success-bg: rgba(0, 200, 83, 0.1);
+    --error: #ff5252;
+    --error-bg: rgba(255, 82, 82, 0.1);
+    --warning: #ffc107;
+    --warning-bg: rgba(255, 193, 7, 0.1);
+    --info: #29b6f6;
+    --info-bg: rgba(41, 182, 246, 0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .header h1 span {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 14px;
+    margin-left: 10px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .api-key-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .api-key-badge.configured {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 1px solid rgba(0,200,83,0.2);
+  }
+
+  .api-key-badge.not-configured {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border: 1px solid rgba(255,193,7,0.2);
+  }
+
+  .api-key-badge:hover { opacity: 0.85; }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* Layout */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 71px);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    flex-shrink: 0;
+  }
+
+  .nav-group {
+    margin-bottom: 24px;
+  }
+
+  .nav-group-title {
+    padding: 0 20px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .nav-item {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: rgba(108, 92, 231, 0.06);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    background: rgba(108, 92, 231, 0.1);
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  /* Main content */
+  .main {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+    max-height: calc(100vh - 71px);
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: 28px;
+  }
+
+  .page-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-desc {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-get {
+    background: rgba(41, 182, 246, 0.15);
+    color: var(--info);
+  }
+
+  .badge-post {
+    background: rgba(0, 200, 83, 0.15);
+    color: var(--success);
+  }
+
+  /* Forms */
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .form-group label .required {
+    color: var(--error);
+  }
+
+  textarea, input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  textarea:focus, input[type="text"]:focus, input[type="password"]:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  textarea.large {
+    min-height: 160px;
+  }
+
+  .input-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .input-row > * { flex: 1; }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .checkbox-group label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--border);
+  }
+
+  .btn-danger {
+    background: var(--error-bg);
+    color: var(--error);
+    border: 1px solid rgba(255,82,82,0.2);
+  }
+
+  .btn-danger:hover {
+    background: rgba(255,82,82,0.2);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* Results */
+  .result-area {
+    margin-top: 20px;
+    display: none;
+  }
+
+  .result-area.visible {
+    display: block;
+  }
+
+  .result-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 400px;
+    overflow-y: auto;
+    line-height: 1.7;
+  }
+
+  .result-box.success {
+    border-color: rgba(0,200,83,0.3);
+    background: rgba(0,200,83,0.04);
+  }
+
+  .result-box.error {
+    border-color: rgba(255,82,82,0.3);
+    background: rgba(255,82,82,0.04);
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .result-label.success { color: var(--success); }
+  .result-label.error { color: var(--error); }
+
+  .copy-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Image Upload */
+  .image-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .image-upload-zone:hover {
+    border-color: var(--accent);
+    background: rgba(108, 92, 231, 0.04);
+  }
+
+  .image-upload-zone.has-image {
+    padding: 12px;
+    border-style: solid;
+    border-color: var(--accent);
+  }
+
+  .image-upload-zone input[type="file"] {
+    display: none;
+  }
+
+  .upload-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  .upload-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .upload-text span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .upload-subtext {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .image-preview.visible {
+    display: inline-block;
+  }
+
+  .remove-image {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: var(--error);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .remove-image.visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.visible {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 460px;
+    max-width: 90vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+
+  .modal h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .modal p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .modal .btn-group {
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* Table for results */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .results-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .results-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .results-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .results-table .status-ok { color: var(--success); }
+  .results-table .status-err { color: var(--error); }
+  .results-table .status-warn { color: var(--warning); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { padding: 20px; }
+    .header { padding: 14px 16px; }
+    .input-row { flex-direction: column; }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-primary);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    z-index: 300;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .toast.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* CID highlighted */
+  .cid-highlight {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 1px;
+    padding: 14px 0 4px;
+    font-family: 'Consolas', monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">P</div>
+    <h1>CIDMS Portal <span>v1.0</span></h1>
+  </div>
+  <div class="header-actions">
+    <div class="api-key-badge not-configured" id="apiKeyBadge" onclick="openSettings()">
+      <div class="dot"></div>
+      <span id="apiKeyStatus">API Key Not Set</span>
+    </div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">CIDMS</div>
+      <div class="nav-item active" onclick="showPage('get-cid')" data-page="get-cid">
+        <div class="nav-icon">🔑</div> Get CID via IID
+      </div>
+      <div class="nav-item" onclick="showPage('check-iid')" data-page="check-iid">
+        <div class="nav-icon">🔍</div> Check IID Status
+      </div>
+      <div class="nav-item" onclick="showPage('image-cid')" data-page="image-cid">
+        <div class="nav-icon">🖼️</div> Image → IID + CID
+      </div>
+      <div class="nav-item" onclick="showPage('image-iid')" data-page="image-iid">
+        <div class="nav-icon">📐</div> Image → IID Only
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">PIDMS</div>
+      <div class="nav-item" onclick="showPage('pidms')" data-page="pidms">
+        <div class="nav-icon">📦</div> Key Checker
+      </div>
+      <div class="nav-item" onclick="showPage('pidms-desc')" data-page="pidms-desc">
+        <div class="nav-icon">📋</div> Get Description
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">REDEEMMS</div>
+      <div class="nav-item" onclick="showPage('redeemms')" data-page="redeemms">
+        <div class="nav-icon">🎫</div> Redeem Keys
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Office 365</div>
+      <div class="nav-item" onclick="showPage('o365')" data-page="o365">
+        <div class="nav-icon">📧</div> Account Checker
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Settings</div>
+      <div class="nav-item" onclick="openSettings()" data-page="settings">
+        <div class="nav-icon">⚙️</div> API Configuration
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- ===== GET CID VIA IID ===== -->
+    <div class="page active" id="page-get-cid">
+      <div class="page-header">
+        <h2>Get Confirmation ID via IID</h2>
+        <p>Submit an Installation ID (IID) to retrieve the corresponding Confirmation ID (CID).</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> CIDMS API</div>
+        <div class="card-desc">The IID should be a long numeric string. Enter it below without dashes.</div>
+        <div class="form-group">
+          <label>Installation ID (IID) <span class="required">*</span></label>
+          <textarea id="getCID_iid" placeholder="Enter IID (numeric string, e.g. 304879672149543591364556996487547823408023240893620542207636326)" rows="3"></textarea>
+          <div class="input-hint">Paste the full IID. Dashes will be automatically removed.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="getCID_btn" onclick="getCIDByIID()">
+            <span id="getCID_btnText">Get Confirmation ID</span>
+          </button>
+        </div>
+        <div class="result-area" id="getCID_result">
+          <div class="result-header">
+            <div class="result-label" id="getCID_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('getCID_resultBox')">Copy</button>
+          </div>
+          <div class="cid-highlight" id="getCID_cidValue"></div>
+          <div class="result-box" id="getCID_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CHECK IID STATUS ===== -->
+    <div class="page" id="page-check-iid">
+      <div class="page-header">
+        <h2>Check IID Status</h2>
+        <p>Verify whether an Installation ID has already been used or is available.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> Status Check</div>
+        <div class="card-desc">Uses the justforcheck=1 flag to query status without retrieving a CID.</div>
+        <div class="form-group">
+          <label>Installation ID (IID) <span class="required">*</span></label>
+          <textarea id="checkIID_iid" placeholder="Enter IID to check status" rows="3"></textarea>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="checkIID_btn" onclick="checkIIDStatus()">
+            <span id="checkIID_btnText">Check Status</span>
+          </button>
+        </div>
+        <div class="result-area" id="checkIID_result">
+          <div class="result-header">
+            <div class="result-label" id="checkIID_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('checkIID_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="checkIID_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMAGE → IID + CID ===== -->
+    <div class="page" id="page-image-cid">
+      <div class="page-header">
+        <h2>Detect IID from Image + Get CID</h2>
+        <p>Upload an image containing an IID. The system will OCR-detect the IID and return both the detected IID and the Confirmation ID.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-post">POST</span> Image → IID + CID</div>
+        <div class="card-desc">Converts your image to Base64 and sends it for processing. Supported formats: PNG, JPG, BMP, GIF.</div>
+        <div class="form-group">
+          <label>Upload Image <span class="required">*</span></label>
+          <div class="image-upload-zone" id="imgCID_zone" onclick="document.getElementById('imgCID_file').click()">
+            <input type="file" id="imgCID_file" accept="image/*" onchange="handleImageUpload(this, 'imgCID')">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Click to upload or <span>drag & drop</span></div>
+            <div class="upload-subtext">PNG, JPG, BMP, GIF — Max 3 MB</div>
+            <img class="image-preview" id="imgCID_preview">
+          </div>
+          <button class="btn btn-danger" id="imgCID_remove" style="display:none; margin-top:10px" onclick="removeImage('imgCID')">Remove Image</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="imgCID_submit" onclick="imageToCID()" disabled>
+            <span id="imgCID_btnText">Detect IID & Get CID</span>
+          </button>
+        </div>
+        <div class="result-area" id="imgCID_result">
+          <div class="result-header">
+            <div class="result-label" id="imgCID_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('imgCID_resultBox')">Copy</button>
+          </div>
+          <div class="cid-highlight" id="imgCID_cidValue"></div>
+          <div class="result-box" id="imgCID_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMAGE → IID ONLY ===== -->
+    <div class="page" id="page-image-iid">
+      <div class="page-header">
+        <h2>Detect IID from Image</h2>
+        <p>Upload an image and the system will extract the Installation ID without generating a CID.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-post">POST</span> Image → IID Only</div>
+        <div class="card-desc">OCR-only: extracts the IID text from the uploaded image.</div>
+        <div class="form-group">
+          <label>Upload Image <span class="required">*</span></label>
+          <div class="image-upload-zone" id="imgIID_zone" onclick="document.getElementById('imgIID_file').click()">
+            <input type="file" id="imgIID_file" accept="image/*" onchange="handleImageUpload(this, 'imgIID')">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">Click to upload or <span>drag & drop</span></div>
+            <div class="upload-subtext">PNG, JPG, BMP, GIF — Max 3 MB</div>
+            <img class="image-preview" id="imgIID_preview">
+          </div>
+          <button class="btn btn-danger" id="imgIID_remove" style="display:none; margin-top:10px" onclick="removeImage('imgIID')">Remove Image</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="imgIID_submit" onclick="imageToIID()" disabled>
+            <span id="imgIID_btnText">Detect IID</span>
+          </button>
+        </div>
+        <div class="result-area" id="imgIID_result">
+          <div class="result-header">
+            <div class="result-label" id="imgIID_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('imgIID_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="imgIID_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PIDMS KEY CHECKER ===== -->
+    <div class="page" id="page-pidms">
+      <div class="page-header">
+        <h2>PIDMS Key Checker</h2>
+        <p>Check the status and details of product keys (PID keys).</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> Key Checker</div>
+        <div class="card-desc">Enter one or more product keys, one per line. The API checks each key and returns its status.</div>
+        <div class="form-group">
+          <label>Product Keys <span class="required">*</span></label>
+          <textarea class="large" id="pidms_keys" placeholder="Enter product keys, one per line:&#10;BBPX2J9NX9J8R27VYC9JDGQ2T&#10;F8RMT6FNYCBMKQGX9M34BY7PT"></textarea>
+          <div class="input-hint">Keys are separated by newlines. Maximum 50 keys per request recommended.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="pidms_btn" onclick="checkPIDMS()">
+            <span id="pidms_btnText">Check Keys</span>
+          </button>
+        </div>
+        <div class="result-area" id="pidms_result">
+          <div class="result-header">
+            <div class="result-label" id="pidms_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('pidms_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="pidms_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PIDMS DESCRIPTION ===== -->
+    <div class="page" id="page-pidms-desc">
+      <div class="page-header">
+        <h2>Get Key Description</h2>
+        <p>Retrieve the product description for keys without full status checking.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> Description Lookup</div>
+        <div class="card-desc">Faster than full check. Returns product name and edition info.</div>
+        <div class="form-group">
+          <label>Product Keys <span class="required">*</span></label>
+          <textarea class="large" id="pidmsDesc_keys" placeholder="Enter product keys, one per line"></textarea>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="pidmsDesc_btn" onclick="getDescription()">
+            <span id="pidmsDesc_btnText">Get Description</span>
+          </button>
+        </div>
+        <div class="result-area" id="pidmsDesc_result">
+          <div class="result-header">
+            <div class="result-label" id="pidmsDesc_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('pidmsDesc_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="pidmsDesc_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REDEEMMS ===== -->
+    <div class="page" id="page-redeemms">
+      <div class="page-header">
+        <h2>Redeem Keys</h2>
+        <p>Attempt to redeem product keys via the REDEEMMS API.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> Key Redemption</div>
+        <div class="card-desc">Enter keys to redeem. The API will process redemption and return results.</div>
+        <div class="form-group">
+          <label>Product Keys <span class="required">*</span></label>
+          <textarea class="large" id="redeem_keys" placeholder="Enter keys to redeem, one per line:&#10;QBFC4J2NWCPKY824GC4BQJ4QG&#10;MRJJYN9PTVQ2VCXCVB7P2DM3G"></textarea>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="redeem_btn" onclick="redeemKeys()">
+            <span id="redeem_btnText">Redeem Keys</span>
+          </button>
+        </div>
+        <div class="result-area" id="redeem_result">
+          <div class="result-header">
+            <div class="result-label" id="redeem_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('redeem_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="redeem_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== OFFICE 365 ===== -->
+    <div class="page" id="page-o365">
+      <div class="page-header">
+        <h2>Office 365 Account Checker</h2>
+        <p>Check the status of Microsoft 365 accounts.</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="badge badge-get">GET</span> Account Checker</div>
+        <div class="card-desc">Enter accounts in email:password format, one per line.</div>
+        <div class="form-group">
+          <label>Accounts <span class="required">*</span></label>
+          <textarea class="large" id="o365_accounts" placeholder="Enter accounts, one per line:&#10;abcd1@hotmail.com:password1&#10;abcd2@hotmail.com:password2"></textarea>
+          <div class="input-hint">Format: email:password — one account per line.</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="o365_btn" onclick="checkO365()">
+            <span id="o365_btnText">Check Accounts</span>
+          </button>
+        </div>
+        <div class="result-area" id="o365_result">
+          <div class="result-header">
+            <div class="result-label" id="o365_resultLabel">Response</div>
+            <button class="copy-btn" onclick="copyResult('o365_resultBox')">Copy</button>
+          </div>
+          <div class="result-box" id="o365_resultBox"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <h3>⚙️ API Configuration</h3>
+    <p>Enter your pidkey.com API key. It will be saved in your browser's local storage.</p>
+    <div class="form-group">
+      <label>API Key <span class="required">*</span></label>
+      <input type="password" id="settings_apiKey" placeholder="Enter your API key">
+    </div>
+    <div class="form-group">
+      <label>API Base URL</label>
+      <input type="text" id="settings_baseUrl" value="https://pidkey.com/ajax" placeholder="https://pidkey.com/ajax">
+      <div class="input-hint">Leave empty to use the built-in local proxy (recommended). Alternative: https://khoatoantin.com/ajax</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save Configuration</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ STATE ============
+let API_KEY = localStorage.getItem('cidms_apikey') || 'nVHBz3RIsHpXHofLv3B89iFK8';
+let BASE_URL = localStorage.getItem('cidms_baseurl') || '';
+let imageBase64Data = { imgCID: null, imgIID: null };
+
+// ============ INIT ============
+if (!localStorage.getItem('cidms_apikey')) {
+  localStorage.setItem('cidms_apikey', API_KEY);
+}
+updateApiKeyBadge();
+
+// ============ NAVIGATION ============
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+}
+
+// ============ SETTINGS ============
+function openSettings() {
+  document.getElementById('settings_apiKey').value = API_KEY;
+  document.getElementById('settings_baseUrl').value = BASE_URL;
+  document.getElementById('settingsModal').classList.add('visible');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('visible');
+}
+
+function saveSettings() {
+  API_KEY = document.getElementById('settings_apiKey').value.trim();
+  BASE_URL = document.getElementById('settings_baseUrl').value.trim();
+  localStorage.setItem('cidms_apikey', API_KEY);
+  localStorage.setItem('cidms_baseurl', BASE_URL);
+  updateApiKeyBadge();
+  closeSettings();
+  showToast('Configuration saved successfully');
+}
+
+function updateApiKeyBadge() {
+  const badge = document.getElementById('apiKeyBadge');
+  const status = document.getElementById('apiKeyStatus');
+  if (API_KEY) {
+    badge.className = 'api-key-badge configured';
+    status.textContent = 'API Key Set (' + API_KEY.substring(0, 6) + '...)';
+  } else {
+    badge.className = 'api-key-badge not-configured';
+    status.textContent = 'API Key Not Set';
+  }
+}
+
+function requireApiKey() {
+  if (!API_KEY) {
+    openSettings();
+    showToast('Please configure your API key first');
+    return false;
+  }
+  return true;
+}
+
+// ============ TOAST ============
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+// ============ COPY ============
+function copyResult(boxId) {
+  const text = document.getElementById(boxId).textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+// ============ HELPERS ============
+function cleanIID(str) {
+  return str.replace(/[\s\-]/g, '').trim();
+}
+
+// Resolve API base: local proxy when no custom URL is set
+function apiBase() {
+  // If saved base URL is the old default (direct pidkey), use the proxy instead
+  if (BASE_URL === 'https://pidkey.com/ajax' || BASE_URL === 'https://khoatoantin.com/ajax') {
+    return '/ajax';
+  }
+  return BASE_URL || '/ajax';
+}
+
+const buttonOriginalText = {};
+
+function setLoading(btnId, textId, loading) {
+  const btn = document.getElementById(btnId);
+  const text = document.getElementById(textId);
+  if (!btn || !text) return;
+  if (loading) {
+    if (!buttonOriginalText[btnId]) {
+      buttonOriginalText[btnId] = text.textContent;
+    }
+    btn.disabled = true;
+    text.innerHTML = '<span class="spinner"></span> Processing...';
+  } else {
+    btn.disabled = false;
+    text.textContent = buttonOriginalText[btnId] || 'Submit';
+  }
+}
+
+// Parse API response: try JSON, fall back to plain text
+async function parseResponse(res) {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    return { raw_text: text, is_plain_text: true };
+  }
+}
+
+function showResult(prefix, data, isSuccess) {
+  const area = document.getElementById(prefix + '_result');
+  const box = document.getElementById(prefix + '_resultBox');
+  const label = document.getElementById(prefix + '_resultLabel');
+
+  area.classList.add('visible');
+  if (data && data.is_plain_text) {
+    box.textContent = data.raw_text;
+  } else {
+    box.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  }
+
+  if (isSuccess === true) {
+    box.className = 'result-box success';
+    label.className = 'result-label success';
+    label.textContent = '✓ Success';
+  } else if (isSuccess === false || (data && data.is_plain_text)) {
+    box.className = 'result-box error';
+    label.className = 'result-label error';
+    label.textContent = '✗ Error';
+  } else {
+    box.className = 'result-box';
+    label.className = 'result-label';
+    label.textContent = 'Response';
+  }
+}
+
+function extractCID(data) {
+  const el = document.getElementById(data.prefix + '_cidValue');
+  if (!el) return;
+  if (data.confirmationid) {
+    el.textContent = data.confirmationid;
+    el.style.display = 'block';
+  } else if (data.confirmation_id_with_dash) {
+    el.textContent = data.confirmation_id_with_dash;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ============ IMAGE HANDLING ============
+function handleImageUpload(input, prefix) {
+  const file = input.files[0];
+  if (!file) return;
+
+  if (file.size > 3 * 1024 * 1024) {
+    showToast('File too large. Maximum 3 MB.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    const base64Raw = base64.split(',')[1];
+    imageBase64Data[prefix] = base64Raw;
+
+    const preview = document.getElementById(prefix + '_preview');
+    preview.src = base64;
+    preview.classList.add('visible');
+
+    const zone = document.getElementById(prefix + '_zone');
+    zone.classList.add('has-image');
+    zone.querySelector('.upload-icon').style.display = 'none';
+    zone.querySelector('.upload-text').style.display = 'none';
+    zone.querySelector('.upload-subtext').style.display = 'none';
+
+    document.getElementById(prefix + '_remove').style.display = 'inline-flex';
+    document.getElementById(prefix + '_submit').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage(prefix) {
+  imageBase64Data[prefix] = null;
+  const preview = document.getElementById(prefix + '_preview');
+  preview.src = '';
+  preview.classList.remove('visible');
+
+  const zone = document.getElementById(prefix + '_zone');
+  zone.classList.remove('has-image');
+  zone.querySelector('.upload-icon').style.display = '';
+  zone.querySelector('.upload-text').style.display = '';
+  zone.querySelector('.upload-subtext').style.display = '';
+
+  document.getElementById(prefix + '_remove').style.display = 'none';
+  document.getElementById(prefix + '_submit').disabled = true;
+  document.getElementById(prefix + '_file').value = '';
+}
+
+// ============ API CALLS ============
+
+// 1. Get CID by IID
+async function getCIDByIID() {
+  if (!requireApiKey()) return;
+  const iid = cleanIID(document.getElementById('getCID_iid').value);
+  if (!iid) { showToast('Please enter an IID'); return; }
+
+  setLoading('getCID_btn', 'getCID_btnText', true);
+
+  try {
+    const url = `${apiBase()}/cidms_api?iids=${encodeURIComponent(iid)}&justforcheck=0&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('getCID', data, data.have_cid === 1 || data.result === 'Successfully');
+    extractCID({ ...data, prefix: 'getCID' });
+  } catch (err) {
+    showResult('getCID', 'Request failed: ' + err.message, false);
+    document.getElementById('getCID_cidValue').style.display = 'none';
+  }
+
+  setLoading('getCID_btn', 'getCID_btnText', false);
+}
+
+// 2. Check IID Status
+async function checkIIDStatus() {
+  if (!requireApiKey()) return;
+  const iid = cleanIID(document.getElementById('checkIID_iid').value);
+  if (!iid) { showToast('Please enter an IID'); return; }
+
+  setLoading('checkIID_btn', 'checkIID_btnText', true);
+
+  try {
+    const url = `${apiBase()}/cidms_api?iids=${encodeURIComponent(iid)}&justforcheck=1&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('checkIID', data, data.had_occurred === 0);
+  } catch (err) {
+    showResult('checkIID', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('checkIID_btn', 'checkIID_btnText', false);
+}
+
+// 3. Image → IID + CID (POST)
+async function imageToCID() {
+  if (!requireApiKey()) return;
+  if (!imageBase64Data.imgCID) { showToast('Please upload an image'); return; }
+
+  setLoading('imgCID_btn', 'imgCID_btnText', true);
+
+  try {
+    const url = `${apiBase()}/cidms_via_image_base64_string_api`;
+    const body = JSON.stringify({
+      apikey: API_KEY,
+      imagebase64string: imageBase64Data.imgCID
+    });
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body
+    });
+    const data = await parseResponse(res);
+
+    showResult('imgCID', data, data.have_cid === 1 || data.result?.includes('Successfully'));
+    extractCID({ ...data, prefix: 'imgCID' });
+  } catch (err) {
+    showResult('imgCID', 'Request failed: ' + err.message, false);
+    document.getElementById('imgCID_cidValue').style.display = 'none';
+  }
+
+  setLoading('imgCID_btn', 'imgCID_btnText', false);
+}
+
+// 4. Image → IID Only (POST)
+async function imageToIID() {
+  if (!requireApiKey()) return;
+  if (!imageBase64Data.imgIID) { showToast('Please upload an image'); return; }
+
+  setLoading('imgIID_btn', 'imgIID_btnText', true);
+
+  try {
+    const url = `${apiBase()}/detecting_iid_from_image`;
+    const body = JSON.stringify({
+      apikey: API_KEY,
+      imagebase64string: imageBase64Data.imgIID
+    });
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body
+    });
+    const data = await parseResponse(res);
+
+    showResult('imgIID', data, data.result?.includes('detected'));
+  } catch (err) {
+    showResult('imgIID', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('imgIID_btn', 'imgIID_btnText', false);
+}
+
+// 5. PIDMS Key Check
+async function checkPIDMS() {
+  if (!requireApiKey()) return;
+  const keys = document.getElementById('pidms_keys').value.trim();
+  if (!keys) { showToast('Please enter product keys'); return; }
+
+  setLoading('pidms_btn', 'pidms_btnText', true);
+
+  try {
+    const url = `${apiBase()}/pidms_api?keys=${encodeURIComponent(keys)}&justgetdescription=0&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('pidms', data, true);
+  } catch (err) {
+    showResult('pidms', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('pidms_btn', 'pidms_btnText', false);
+}
+
+// 6. PIDMS Description
+async function getDescription() {
+  if (!requireApiKey()) return;
+  const keys = document.getElementById('pidmsDesc_keys').value.trim();
+  if (!keys) { showToast('Please enter product keys'); return; }
+
+  setLoading('pidmsDesc_btn', 'pidmsDesc_btnText', true);
+
+  try {
+    const url = `${apiBase()}/pidms_api?keys=${encodeURIComponent(keys)}&justgetdescription=1&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('pidmsDesc', data, true);
+  } catch (err) {
+    showResult('pidmsDesc', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('pidmsDesc_btn', 'pidmsDesc_btnText', false);
+}
+
+// 7. REDEEMMS
+async function redeemKeys() {
+  if (!requireApiKey()) return;
+  const keys = document.getElementById('redeem_keys').value.trim();
+  if (!keys) { showToast('Please enter product keys'); return; }
+
+  setLoading('redeem_btn', 'redeem_btnText', true);
+
+  try {
+    const url = `${apiBase()}/redeemms_api?keys=${encodeURIComponent(keys)}&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('redeem', data, true);
+  } catch (err) {
+    showResult('redeem', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('redeem_btn', 'redeem_btnText', false);
+}
+
+// 8. Office 365
+async function checkO365() {
+  if (!requireApiKey()) return;
+  const accounts = document.getElementById('o365_accounts').value.trim();
+  if (!accounts) { showToast('Please enter accounts'); return; }
+
+  setLoading('o365_btn', 'o365_btnText', true);
+
+  try {
+    const url = `${apiBase()}/office365_api?accounts=${encodeURIComponent(accounts)}&apikey=${encodeURIComponent(API_KEY)}`;
+    const res = await fetch(url);
+    const data = await parseResponse(res);
+
+    showResult('o365', data, true);
+  } catch (err) {
+    showResult('o365', 'Request failed: ' + err.message, false);
+  }
+
+  setLoading('o365_btn', 'o365_btnText', false);
+}
+
+// Close modal on backdrop click
+document.getElementById('settingsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSettings();
+});
+
+// Keyboard shortcut: Escape closes modal
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeSettings();
+});
+</script>
+</body>
+</html>
