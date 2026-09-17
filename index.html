@@ -136,7 +136,7 @@
   }
 
   .nav-item {
-    padding: 10px 20px;
+    padding: 9px 20px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -145,27 +145,39 @@
     font-size: 14px;
     color: rgba(255, 255, 255, 0.85);
     border-left: 3px solid transparent;
+    user-select: none;
   }
 
   .nav-item:hover {
-    background: var(--sidebar-hover);
+    background: rgba(255, 255, 255, 0.06);
     color: #ffffff;
   }
 
   .nav-item.active {
-    background: var(--sidebar-hover);
+    background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
     border-left-color: var(--accent);
     font-weight: 600;
   }
 
   .nav-icon {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+
+  .nav-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .nav-item.active .nav-icon {
+    opacity: 1;
   }
 
   /* Main content */
@@ -585,19 +597,19 @@
     <div class="nav-group">
       <div class="nav-group-title">CIDMS</div>
       <div class="nav-item active" onclick="showPage('get-cid')" data-page="get-cid">
-        <div class="nav-icon">🔑</div> Get CID via IID
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.68 12.32 21 2"/><path d="M16 7l3 3"/></svg></div> Get CID via IID
       </div>
       <div class="nav-item" onclick="showPage('check-iid')" data-page="check-iid">
-        <div class="nav-icon">🔍</div> Check IID Status
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div> Check IID Status
       </div>
     </div>
     <div class="nav-group">
       <div class="nav-group-title">PIDMS</div>
       <div class="nav-item" onclick="showPage('pidms')" data-page="pidms">
-        <div class="nav-icon">📦</div> Key Checker
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div> Key Checker
       </div>
       <div class="nav-item" onclick="showPage('pidms-desc')" data-page="pidms-desc">
-        <div class="nav-icon">📋</div> Get Description
+        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg></div> Get Description
       </div>
     </div>
   </div>
