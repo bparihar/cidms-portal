@@ -1,0 +1,6 @@
+{
+  "name": "cidms-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web portal for pidkey.com APIs: CIDMS, PIDMS, REDEEMMS, Office365 checker"
+}
