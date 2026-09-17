@@ -820,12 +820,6 @@
       <div class="nav-item" onclick="showPage('check-iid')" data-page="check-iid">
         <div class="nav-icon">🔍</div> Check IID Status
       </div>
-      <div class="nav-item" onclick="showPage('image-cid')" data-page="image-cid">
-        <div class="nav-icon">🖼️</div> Image → IID + CID
-      </div>
-      <div class="nav-item" onclick="showPage('image-iid')" data-page="image-iid">
-        <div class="nav-icon">📐</div> Image → IID Only
-      </div>
     </div>
     <div class="nav-group">
       <div class="nav-group-title">PIDMS</div>
@@ -907,77 +901,6 @@
             <button class="copy-btn" onclick="copyResult('checkIID_resultBox')">Copy</button>
           </div>
           <div class="result-box" id="checkIID_resultBox"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== IMAGE → IID + CID ===== -->
-    <div class="page" id="page-image-cid">
-      <div class="page-header">
-        <h2>Detect IID from Image + Get CID</h2>
-        <p>Upload an image containing an IID. The system will OCR-detect the IID and return both the detected IID and the Confirmation ID.</p>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-post">POST</span> Image → IID + CID</div>
-        <div class="card-desc">Converts your image to Base64 and sends it for processing. Supported formats: PNG, JPG, BMP, GIF.</div>
-        <div class="form-group">
-          <label>Upload Image <span class="required">*</span></label>
-          <div class="image-upload-zone" id="imgCID_zone" onclick="document.getElementById('imgCID_file').click()">
-            <input type="file" id="imgCID_file" accept="image/*" onchange="handleImageUpload(this, 'imgCID')">
-            <div class="upload-icon">📤</div>
-            <div class="upload-text">Click to upload or <span>drag & drop</span></div>
-            <div class="upload-subtext">PNG, JPG, BMP, GIF — Max 3 MB</div>
-            <img class="image-preview" id="imgCID_preview">
-          </div>
-          <button class="btn btn-danger" id="imgCID_remove" style="display:none; margin-top:10px" onclick="removeImage('imgCID')">Remove Image</button>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" id="imgCID_submit" onclick="imageToCID()" disabled>
-            <span id="imgCID_btnText">Detect IID & Get CID</span>
-          </button>
-        </div>
-        <div class="result-area" id="imgCID_result">
-          <div class="result-header">
-            <div class="result-label" id="imgCID_resultLabel">Response</div>
-            <button class="copy-btn" onclick="copyResult('imgCID_resultBox')">Copy</button>
-          </div>
-          <div class="cid-highlight" id="imgCID_cidValue"></div>
-          <div class="result-box" id="imgCID_resultBox"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== IMAGE → IID ONLY ===== -->
-    <div class="page" id="page-image-iid">
-      <div class="page-header">
-        <h2>Detect IID from Image</h2>
-        <p>Upload an image and the system will extract the Installation ID without generating a CID.</p>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="badge badge-post">POST</span> Image → IID Only</div>
-        <div class="card-desc">OCR-only: extracts the IID text from the uploaded image.</div>
-        <div class="form-group">
-          <label>Upload Image <span class="required">*</span></label>
-          <div class="image-upload-zone" id="imgIID_zone" onclick="document.getElementById('imgIID_file').click()">
-            <input type="file" id="imgIID_file" accept="image/*" onchange="handleImageUpload(this, 'imgIID')">
-            <div class="upload-icon">📤</div>
-            <div class="upload-text">Click to upload or <span>drag & drop</span></div>
-            <div class="upload-subtext">PNG, JPG, BMP, GIF — Max 3 MB</div>
-            <img class="image-preview" id="imgIID_preview">
-          </div>
-          <button class="btn btn-danger" id="imgIID_remove" style="display:none; margin-top:10px" onclick="removeImage('imgIID')">Remove Image</button>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary" id="imgIID_submit" onclick="imageToIID()" disabled>
-            <span id="imgIID_btnText">Detect IID</span>
-          </button>
-        </div>
-        <div class="result-area" id="imgIID_result">
-          <div class="result-header">
-            <div class="result-label" id="imgIID_resultLabel">Response</div>
-            <button class="copy-btn" onclick="copyResult('imgIID_resultBox')">Copy</button>
-          </div>
-          <div class="result-box" id="imgIID_resultBox"></div>
         </div>
       </div>
     </div>
@@ -1106,7 +1029,6 @@
 // ============ STATE ============
 let API_KEY = localStorage.getItem('cidms_apikey') || 'nVHBz3RIsHpXHofLv3B89iFK8';
 let BASE_URL = localStorage.getItem('cidms_baseurl') || '';
-let imageBase64Data = { imgCID: null, imgIID: null };
 
 // ============ INIT ============
 if (!localStorage.getItem('cidms_apikey')) {
@@ -1219,55 +1141,6 @@ function extractCID(data) {
   }
 }
 
-// ============ IMAGE HANDLING ============
-function handleImageUpload(input, prefix) {
-  const file = input.files[0];
-  if (!file) return;
-
-  if (file.size > 3 * 1024 * 1024) {
-    showToast('File too large. Maximum 3 MB.');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64 = e.target.result;
-    const base64Raw = base64.split(',')[1];
-    imageBase64Data[prefix] = base64Raw;
-
-    const preview = document.getElementById(prefix + '_preview');
-    preview.src = base64;
-    preview.classList.add('visible');
-
-    const zone = document.getElementById(prefix + '_zone');
-    zone.classList.add('has-image');
-    zone.querySelector('.upload-icon').style.display = 'none';
-    zone.querySelector('.upload-text').style.display = 'none';
-    zone.querySelector('.upload-subtext').style.display = 'none';
-
-    document.getElementById(prefix + '_remove').style.display = 'inline-flex';
-    document.getElementById(prefix + '_submit').disabled = false;
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeImage(prefix) {
-  imageBase64Data[prefix] = null;
-  const preview = document.getElementById(prefix + '_preview');
-  preview.src = '';
-  preview.classList.remove('visible');
-
-  const zone = document.getElementById(prefix + '_zone');
-  zone.classList.remove('has-image');
-  zone.querySelector('.upload-icon').style.display = '';
-  zone.querySelector('.upload-text').style.display = '';
-  zone.querySelector('.upload-subtext').style.display = '';
-
-  document.getElementById(prefix + '_remove').style.display = 'none';
-  document.getElementById(prefix + '_submit').disabled = true;
-  document.getElementById(prefix + '_file').value = '';
-}
-
 // ============ API CALLS ============
 
 // 1. Get CID by IID
@@ -1310,64 +1183,6 @@ async function checkIIDStatus() {
   }
 
   setLoading('checkIID_btn', 'checkIID_btnText', false);
-}
-
-// 3. Image → IID + CID (POST)
-async function imageToCID() {
-  if (!imageBase64Data.imgCID) { showToast('Please upload an image'); return; }
-
-  setLoading('imgCID_btn', 'imgCID_btnText', true);
-
-  try {
-    const url = `${apiBase()}/cidms_via_image_base64_string_api`;
-    const body = JSON.stringify({
-      apikey: API_KEY,
-      imagebase64string: imageBase64Data.imgCID
-    });
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: body
-    });
-    const data = await parseResponse(res);
-
-    showResult('imgCID', data, data.have_cid === 1 || data.result?.includes('Successfully'));
-    extractCID({ ...data, prefix: 'imgCID' });
-  } catch (err) {
-    showResult('imgCID', 'Request failed: ' + err.message, false);
-    document.getElementById('imgCID_cidValue').style.display = 'none';
-  }
-
-  setLoading('imgCID_btn', 'imgCID_btnText', false);
-}
-
-// 4. Image → IID Only (POST)
-async function imageToIID() {
-  if (!imageBase64Data.imgIID) { showToast('Please upload an image'); return; }
-
-  setLoading('imgIID_btn', 'imgIID_btnText', true);
-
-  try {
-    const url = `${apiBase()}/detecting_iid_from_image`;
-    const body = JSON.stringify({
-      apikey: API_KEY,
-      imagebase64string: imageBase64Data.imgIID
-    });
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: body
-    });
-    const data = await parseResponse(res);
-
-    showResult('imgIID', data, data.result?.includes('detected'));
-  } catch (err) {
-    showResult('imgIID', 'Request failed: ' + err.message, false);
-  }
-
-  setLoading('imgIID_btn', 'imgIID_btnText', false);
 }
 
 // 5. PIDMS Key Check
