@@ -4,11 +4,19 @@
 
 export default async function handler(req, res) {
   // Extract the API path segments after /ajax/
-  const segments = req.query.path || [];
-  const apiPath = Array.isArray(segments) ? segments.join('/') : segments;
+  // Try route param first (from vercel.json rewrite), then parse from URL
+  let segments = req.query.path;
+  let apiPath = Array.isArray(segments) ? segments.join('/') : (segments || '');
 
   if (!apiPath) {
-    res.status(400).json({ error: 'Missing API path' });
+    // Fallback: parse from req.url pathname (e.g. /api/ajax/cidms_api or /ajax/cidms_api)
+    const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+    const m = url.pathname.match(/^\/(?:api\/)?ajax\/(.+)$/);
+    if (m) apiPath = m[1];
+  }
+
+  if (!apiPath) {
+    res.status(400).json({ error: 'Missing API path', url: req.url, query: req.query });
     return;
   }
 
