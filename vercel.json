@@ -1,9 +1,12 @@
 {
   "version": 2,
   "framework": null,
+  "redirects": [
+    { "source": "/", "destination": "/portal" },
+    { "source": "/index.html", "destination": "/portal" }
+  ],
   "rewrites": [
-    { "source": "/", "destination": "/api/portal" },
-    { "source": "/index.html", "destination": "/api/portal" },
+    { "source": "/portal", "destination": "/api/portal" },
     { "source": "/ajax/:path*", "destination": "/api/ajax/:path*" }
   ],
   "functions": {

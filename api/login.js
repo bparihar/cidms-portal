@@ -11,13 +11,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
-  let body;
-  try {
-    body = await req.json();
-  } catch {
-    return res.status(400).json({ ok: false, error: 'Invalid request' });
-  }
-
+  // Vercel Node functions auto-parse JSON bodies into req.body
+  const body = req.body || {};
   const email = String(body.email || '').trim().toLowerCase();
   const password = String(body.password || '');
 
