@@ -6,6 +6,7 @@
     { "source": "/index.html", "destination": "/portal" }
   ],
   "rewrites": [
+    { "source": "/login", "destination": "/login.html" },
     { "source": "/portal", "destination": "/api/portal" },
     { "source": "/ajax/:path*", "destination": "/api/ajax/:path*" }
   ],
