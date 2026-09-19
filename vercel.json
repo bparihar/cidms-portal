@@ -2,6 +2,11 @@
   "version": 2,
   "framework": null,
   "rewrites": [
+    { "source": "/", "destination": "/api/portal" },
+    { "source": "/index.html", "destination": "/api/portal" },
     { "source": "/ajax/:path*", "destination": "/api/ajax/:path*" }
-  ]
+  ],
+  "functions": {
+    "api/portal.js": { "includeFiles": "index.html" }
+  }
 }

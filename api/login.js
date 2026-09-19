@@ -1,8 +1,8 @@
 // POST /api/login — validate credentials and issue a signed session cookie.
 // Credentials come from env vars (LOGIN_EMAIL / LOGIN_PASSWORD) with defaults below.
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'cidms-portal-secret-2026';
-const COOKIE_NAME = 'portal_session';
+import { sign, base64url, COOKIE_NAME } from '../lib/auth.js';
+
 const VALID_EMAIL = process.env.LOGIN_EMAIL || 'bhavesh@techvisitsystems.in';
 const VALID_PASSWORD = process.env.LOGIN_PASSWORD || 'Mumbai#99';
 
@@ -33,22 +33,4 @@ export default async function handler(req, res) {
     `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 24 * 7}`
   );
   return res.status(200).json({ ok: true });
-}
-
-async function sign(payload) {
-  const key = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(SESSION_SECRET),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
-  return base64url(new Uint8Array(sig));
-}
-
-function base64url(bytes) {
-  let bin = '';
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }

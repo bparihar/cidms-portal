@@ -1,8 +1,18 @@
 // Vercel serverless proxy for pidkey.com APIs
 // Routes: /ajax/* -> https://pidkey.com/ajax/*
 // Supports GET (query params) and POST (JSON body) methods.
+// Requires a valid session cookie (see lib/auth.js).
+
+import { verifyToken, getToken } from '../../lib/auth.js';
 
 export default async function handler(req, res) {
+  // Require login
+  const token = getToken(req);
+  if (!token || !(await verifyToken(token))) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
   // Extract the API path segments after /ajax/
   // Try route param first (from vercel.json rewrite), then parse from URL
   let segments = req.query.path;
