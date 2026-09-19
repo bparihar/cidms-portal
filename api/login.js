@@ -3,8 +3,8 @@
 
 import { sign, base64url, COOKIE_NAME } from '../lib/auth.js';
 
-const VALID_EMAIL = process.env.LOGIN_EMAIL || 'bhavesh@techvisitsystems.in';
-const VALID_PASSWORD = process.env.LOGIN_PASSWORD || 'Mumbai#99';
+const VALID_EMAIL = (process.env.LOGIN_EMAIL || 'bhavesh@techvisitsystems.in').trim();
+const VALID_PASSWORD = (process.env.LOGIN_PASSWORD || 'Mumbai#99').trim();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
