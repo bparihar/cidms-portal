@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/webp" href="favicon.webp">
+<title>Sign in — Microsoft 365 Partner Admin Center</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f0f2f5 0%, #e4e9f2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.10);
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 36px 32px;
+  }
+
+  .login-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    display: block;
+  }
+
+  .login-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1b1b1b;
+    text-align: center;
+    letter-spacing: -0.2px;
+  }
+
+  .login-subtitle {
+    text-align: center;
+    color: #605e5c;
+    font-size: 14px;
+    margin: 6px 0 28px;
+  }
+
+  .field { margin-bottom: 16px; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 6px;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #252423;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .field input:focus {
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    color: #ffffff;
+    background: #0078d4;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 8px;
+  }
+
+  .login-btn:hover { background: #106ebe; }
+  .login-btn:disabled { background: #71afe5; cursor: default; }
+
+  .login-error {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: rgba(209, 52, 56, 0.08);
+    border: 1px solid rgba(209, 52, 56, 0.4);
+    border-radius: 4px;
+    color: #d13438;
+    font-size: 13px;
+  }
+
+  .login-error.visible { display: block; }
+
+  .login-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: #8a8886;
+  }
+</style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo"><img src="logo.png" alt="Microsoft 365"></div>
+    <h1>Sign in</h1>
+    <div class="login-subtitle">Microsoft 365 Partner Admin Center</div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+
+    <div class="login-footer">Protected portal — authorized access only</div>
+  </div>
+
+<script>
+  const form = document.getElementById('loginForm');
+  const btn = document.getElementById('loginBtn');
+  const error = document.getElementById('loginError');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    error.classList.remove('visible');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value
+        })
+      });
+
+      if (res.ok) {
+        window.location.href = '/';
+        return;
+      }
+
+      const data = await res.json().catch(() => ({}));
+      error.textContent = data.error || 'Invalid email or password';
+      error.classList.add('visible');
+    } catch (err) {
+      error.textContent = 'Network error. Please try again.';
+      error.classList.add('visible');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  });
+</script>
+</body>
+</html>

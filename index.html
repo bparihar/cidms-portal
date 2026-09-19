@@ -71,6 +71,29 @@
     gap: 14px;
   }
 
+  .header-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .signout-btn {
+    background: transparent;
+    border: 1px solid var(--border-hover);
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .signout-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   .logo {
     width: 40px;
     height: 40px;
@@ -561,6 +584,9 @@
     <div class="logo"><img src="logo.png" alt="Microsoft 365"></div>
     <h1>Microsoft 365 Partner Admin Center</h1>
   </div>
+  <div class="header-right">
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
 </div>
 
 <!-- Layout -->
@@ -628,6 +654,14 @@ function showPage(pageId) {
 
   document.getElementById('page-' + pageId).classList.add('active');
   document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+}
+
+// ============ SIGN OUT ============
+async function signOut() {
+  try {
+    await fetch('/api/logout', { method: 'POST' });
+  } catch (e) { /* ignore */ }
+  window.location.href = '/login';
 }
 
 // ============ TOAST ============
